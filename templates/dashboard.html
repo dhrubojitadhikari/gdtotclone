@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Dashboard</h2>
+        {% if not current_user.rclone_config %}
+        <div class="alert alert-warning">
+            Please <a href="{{ url_for('setup_rclone') }}">setup your Rclone configuration</a> to start sharing files.
+        </div>
+        {% else %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Share New File</h5>
+                <form id="shareForm" onsubmit="return handleShare(event)">
+                    <div class="mb-3">
+                        <label for="fileId" class="form-label">Google Drive File ID</label>
+                        <input type="text" class="form-control" id="fileId" name="fileId" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="filename" class="form-label">File Name</label>
+                        <input type="text" class="form-control" id="filename" name="filename" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Share File</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Your Shared Files</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Share Date</th>
+                                <th>Share Count</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in files %}
+                            <tr>
+                                <td>{{ file.filename }}</td>
+                                <td>{{ file.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ file.share_count }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary copy-link" data-id="{{ file.id }}">Copy Link</button>
+                                    <button class="btn btn-sm btn-danger delete-file" data-id="{{ file.id }}">Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function handleShare(event) {
+    event.preventDefault();
+    const fileId = document.getElementById('fileId').value;
+    const filename = document.getElementById('filename').value;
+    
+    fetch('/share-file', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `file_id=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert('Error sharing file');
+        }
+    });
+    return false;
+}
+</script>
+{% endblock %}

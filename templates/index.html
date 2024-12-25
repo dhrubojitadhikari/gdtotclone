@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-4">GDrive Sharer v1.0</h1>
+    <p class="lead">A simple place to share your Google Drive files with friends and colleagues.</p>
+    
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Secure Sharing</h5>
+                    <p class="card-text">Share your files securely with generated short links</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">No Limits</h5>
+                    <p class="card-text">Share and download as many files as you want</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Easy to Use</h5>
+                    <p class="card-text">Simple interface to manage and share your files</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if not current_user.is_authenticated %}
+    <div class="mt-5">
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg mx-2">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg mx-2">Register</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
